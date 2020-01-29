@@ -1,0 +1,43 @@
+.clear-filter{
+  &:after,
+  &:before{
+    display: none;
+  }
+
+  &[filter-color="navy"]{
+    @include linear-gradient-til(rgb(60, 66, 73), rgba(22, 56, 90, 1));
+  }
+}
+
+body {
+  .light {
+    color: white;
+  }
+}
+
+.light {
+  .table, tr:hover, .form-control, .form-control:focus, .input-group-text,
+  .pagination .page-item .page-link,
+  a {
+    color: white;
+  }
+
+  .table-hover tbody tr:hover{
+    color: white;
+    background-color:rgba(255,255,255,.075);
+  }
+
+  ::placeholder {
+    color: whitesmoke;
+  }
+}
+
+.bg-light-transparent {
+  background-color: rgba(255, 255, 255, .35);
+}
+
+.table.clickable {
+  tbody tr {
+    cursor: pointer;
+  }
+}
