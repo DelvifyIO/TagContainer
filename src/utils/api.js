@@ -28,19 +28,21 @@ export const checkStatus = response => new Promise((resolve, reject) => {
 export const getParsedSettings = ({
     method = 'get',
     data,
+    headers = {},
     ...otherSettings
   } = {}) => {
 
-  const headers = {
+  const mergedHeaders = {
     Accept: 'application/json',
     'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
     'Authorization': `Bearer ${_.get(store.getState(), 'auth.token', {})}`,
+    ...headers,
   };
 
   const settings = _.merge({
     body: data ? data instanceof FormData ? data : JSON.stringify(data) : undefined,
     method: _.toUpper(method),
-    headers,
+    headers: mergedHeaders,
   }, otherSettings);
 
   return settings;
@@ -78,7 +80,7 @@ class Api {
       .then(checkStatus)
       .then(r => {
         if (verbose) {
-          return r.json()
+          return r.text()
             .then(jsonResponse => {
               return {
                 statusCode: r.status,

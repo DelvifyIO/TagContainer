@@ -15,9 +15,10 @@ const useForm = ({ onSubmit, validator = () => {}, async = false }) => {
     const error = validator(e.target.name, e.target.value);
     if (e.target.options) {
       const options = e.target.options;
+      const selecteds = window._.filter(options, (option) => option.selected).map((option) => option.value);
       setValues(values => ({
         ...values,
-        [e.target.name]: window._.filter(options, (option) => option.selected).map((option) => option.value),
+        [e.target.name]: e.target.dataset.single ? selecteds.join() : selecteds,
       }));
     } else {
       setValues(values => ({
@@ -32,7 +33,7 @@ const useForm = ({ onSubmit, validator = () => {}, async = false }) => {
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     onSubmit(values, errors);
-  }, [values, errors]);
+  }, [values, errors, onSubmit]);
 
   return {
     form: {

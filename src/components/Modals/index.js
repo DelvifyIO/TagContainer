@@ -1,5 +1,9 @@
-import NewClientModal from './NewClientModal';
+import TagModal from './TagModal';
+import EditClientModal from './EditClientModal';
+import ConfirmModal from './ConfirmModal';
 
 export default {
-    NewClientModal,
+    TagModal,
+    EditClientModal,
+    ConfirmModal,
 }

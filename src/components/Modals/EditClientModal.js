@@ -1,16 +1,24 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 // reactstrap components
 import {Button, Col, Form, FormFeedback, FormGroup, FormText, Input, Modal} from "reactstrap";
 import PropTypes from "prop-types";
 import Label from "reactstrap/es/Label";
-import {useForm} from "../../hooks";
-import InputGroup from "reactstrap/es/InputGroup";
-import InputGroupText from "reactstrap/es/InputGroupText";
+import ConfirmModal from "./ConfirmModal";
 
 // core components
 
 const EditClientModal = (props) => {
-    const { toggleModal, isOpen, initialValues, form } = props;
+    const { toggleModal, isOpen, initialValues, form, onRemove } = props;
+    const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
+
+    const toggleConfirmRemoveModal = useCallback(() => {
+        setIsConfirmRemoveOpen(!isConfirmRemoveOpen);
+    }, [isConfirmRemoveOpen]);
+
+    const showRemoveClientHandler = useCallback(() => {
+        toggleConfirmRemoveModal();
+        toggleModal();
+    }, []);
 
     return (
         <>
@@ -70,7 +78,7 @@ const EditClientModal = (props) => {
                     <Button
                         color="danger"
                         type="button"
-                        onClick={toggleModal}
+                        onClick={showRemoveClientHandler}
                     >
                         Remove Client
                     </Button>
@@ -86,6 +94,13 @@ const EditClientModal = (props) => {
 
                 </Form>
             </Modal>
+
+            <ConfirmModal
+                isOpen={isConfirmRemoveOpen}
+                toggleModal={toggleConfirmRemoveModal}
+                heading={`Are you sure to remove ${initialValues.name}?`}
+                onConfirm={onRemove}
+            />
         </>
     );
 };
@@ -94,7 +109,6 @@ const EditClientModal = (props) => {
 EditClientModal.propTypes = {
     toggleModal: PropTypes.func.isRequired,
     isOpen: PropTypes.bool.isRequired,
-    onSave: PropTypes.func.isRequired,
     initialValues: PropTypes.shape({
         name: PropTypes.string,
         website: PropTypes.string,
@@ -102,15 +116,16 @@ EditClientModal.propTypes = {
     form: PropTypes.shape({
         handleChange: PropTypes.func,
         handleSubmit: PropTypes.func,
-    })
+    }),
+    onRemove: PropTypes.func,
 };
 
 EditClientModal.defaultProps = {
     toggleModal: () => {},
     isOpen: false,
-    onSave: () => {},
     initialValues: {},
     form: {},
+    onRemove: () => {},
 };
 
 export default EditClientModal;

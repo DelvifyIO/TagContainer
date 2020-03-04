@@ -4,3 +4,10 @@ export const STATUS = {
   SUCCESS: 'SUCCESS',
   ERROR: 'ERROR',
 };
+
+export const TAG_STATUS = {
+  INSTALLED: 'INSTALLED',
+  UNINSTALLED: 'UNINSTALLED',
+  LOADING: 'LOADING',
+  NO_WEBSITE: 'NO_WEBSITE',
+};
