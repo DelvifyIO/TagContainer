@@ -70,8 +70,6 @@ const Tags = (props) => {
 
     const validatorTag = useCallback((name, value) => {
         switch (name) {
-            case 'path':
-                return window._.isEmpty(value) ? 'Required' : null;
             case 'script':
                 return window._.isEmpty(value) ? 'Required' : null;
         }

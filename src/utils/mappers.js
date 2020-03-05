@@ -25,7 +25,7 @@ const tagMapper = (datum) => {
   const {
     _id: id,
     name,
-    path,
+    path = '',
     script,
     delay = 0,
   } = datum;
