@@ -10,6 +10,8 @@ import {useDataFetch, useForm} from "../hooks";
 import {clientMapper} from "../utils/mappers";
 import Pagination from "../components/Pagination";
 import {TAG_STATUS} from "../utils/enums";
+import store from "../store";
+import {push} from "react-router-redux";
 
 const Index = (props) => {
   const [searchFocus, setSearchFocus] = useState(false);
@@ -110,7 +112,7 @@ const Index = (props) => {
   }, []);
 
   const onRowClick = useCallback((client) => {
-    window.location.href = `/tags/${client.id}`;
+    store.dispatch(push(`/tags/${client.id}`));
   }, []);
 
   const { form: formNewClient } = useForm({ onSubmit: onSubmitNewClient });
