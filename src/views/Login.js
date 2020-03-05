@@ -21,6 +21,8 @@ import {
 import ExamplesNavbar from "components/Navbars/ExamplesNavbar.js";
 import TransparentFooter from "components/Footers/TransparentFooter.js";
 import {login} from "../actions/authAction";
+import store from "../store";
+import {push} from "react-router-redux";
 
 
 const mapStateToProps = (state) => ({
@@ -38,7 +40,7 @@ function Login(props) {
     const password = e.target.password.value;
     login({ username, password })
         .then(() => {
-          window.location.href = "/";
+          store.dispatch(push('/'));
         });
   }, []);
   React.useEffect(() => {

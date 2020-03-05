@@ -14,6 +14,8 @@ import EditClientModal from "../components/Modals/EditClientModal";
 import TagModal from "../components/Modals/TagModal";
 import {STATUS, TAG_STATUS} from "../utils/enums";
 import {getUrlWithSlash} from "../utils/stringHelper";
+import store from "../store";
+import {push} from "react-router-redux";
 
 const TagRow = (props) => {
     const { onClick, host, tag } = props;
@@ -141,7 +143,7 @@ const Tags = (props) => {
     const removeClientHandler = useCallback(() => {
         window.api.delete(`/client/${clientId}`)
             .then((result) => {
-                window.location.href = `/`;
+                store.dispatch(push('/'));
             })
             .catch((e) => {
                 console.log(e);

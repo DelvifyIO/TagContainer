@@ -65,12 +65,12 @@ const Header = (props) => {
             <Navbar className={"fixed-top " + navbarColor} expand="lg" color="info">
                 <Container>
                     <div className="navbar-translate">
-                        <NavbarBrand
-                            href="/"
-                            id="navbar-brand"
+                        <Link
+                            to="/"
+                            class="navbar-brand"
                         >
                             Tag Container
-                        </NavbarBrand>
+                        </Link>
                         <button
                             className="navbar-toggler navbar-toggler"
                             onClick={() => {

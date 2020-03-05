@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 
 import store from "./store";
 import {login, logout, setUser} from "./actions/authAction";
+import {push} from "react-router-redux";
 
 const loadingComponent = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
 
@@ -29,7 +30,7 @@ const App = (props) => {
         store.dispatch(logout())
           .then(() => {
             setLoading(false);
-            window.location.href = "/login";
+            store.dispatch(push('/login'));
           });
       } else {
         store.dispatch(setUser({ username: decoded.username }, token))
