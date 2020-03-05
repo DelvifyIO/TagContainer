@@ -26,7 +26,7 @@ const TagRow = (props) => {
             onClick={onClick}
         >
             <Row>
-                <Col md={2}>
+                <Col>
                     <span className="h6 text-underline text-uppercase">{ tag.name }</span>
                 </Col>
             </Row>
