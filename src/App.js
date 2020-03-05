@@ -56,7 +56,7 @@ const App = (props) => {
 
   return (
     <Provider store={store}>
-      <BrowserRouter>
+      <HashRouter>
         <React.Suspense fallback={loadingComponent()}>
         <Switch>
           <Switch>
@@ -67,7 +67,7 @@ const App = (props) => {
           </Switch>
         </Switch>
         </React.Suspense>
-      </BrowserRouter>
+      </HashRouter>
     </Provider>
   );
 };
