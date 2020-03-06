@@ -216,11 +216,13 @@ const Tags = (props) => {
                                     <textarea
                                         onBlur={() => { setCopyStatus(STATUS.IDLE); }}
                                         readOnly
-                                        rows={1}
+                                        rows={3}
                                         className="w-100 border-0 text-monospace text-dark p-0"
                                         style={{ resize: 'none' }}
                                         ref={scriptTagRef}
-                                        value={`<script src="${getUrlWithSlash(process.env.REACT_APP_API_HOST)}script/${client.id}" id="delvifyTagContainer${client.id}"/>`}
+                                        value={`<!-- Delvify Tag Container -->
+<script src="${getUrlWithSlash(process.env.REACT_APP_API_HOST)}script/${client.id}" id="delvifyTagContainer${client.id}"/>
+<!-- End Delvify Tag Container -->`}
                                     />
                                 </Form>
                                 <Button className="btn btn-icon m-0 bg-transparent script-copy-btn" onClick={onCopyScriptClick}>
