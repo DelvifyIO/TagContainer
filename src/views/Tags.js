@@ -33,7 +33,7 @@ const TagRow = (props) => {
             <Row>
                 <Col md={2}>
                     <span className="h7 text-uppercase">Path</span><br/>
-                    <a style={{ overflowWrap: 'break-word'}} href={`${getUrlWithSlash(host)}${tag.path}`} target="blank">{ `/${tag.path}` }</a>
+                    <span style={{ overflowWrap: 'break-word'}}>{ `/${tag.path}` }</span>
                 </Col>
                 <Col md={2}>
                     <span className="h7 text-uppercase">Delay</span><br/>
