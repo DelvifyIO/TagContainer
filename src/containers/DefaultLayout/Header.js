@@ -67,7 +67,7 @@ const Header = (props) => {
                     <div className="navbar-translate">
                         <Link
                             to="/"
-                            class="navbar-brand"
+                            className="navbar-brand"
                         >
                             Tag Container
                         </Link>

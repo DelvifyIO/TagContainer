@@ -4,16 +4,16 @@ const clientMapper = (datum) => {
   const {
     _id: id,
     name,
-    website,
+    websites,
     createdAt,
     tags,
-    status = TAG_STATUS.LOADING,
+    status,
   } = datum;
 
   return ({
     id,
     name,
-    website,
+    websites,
     createdAt,
     tags,
     status,

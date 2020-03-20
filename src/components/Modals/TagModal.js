@@ -139,9 +139,9 @@ const TagModal = (props) => {
                     }
                         <Button
                             className="ml-auto"
-                        color="primary"
-                        type="submit"
-                        disabled={!window._.isEmpty(form.errors)}
+                            color="primary"
+                            type="submit"
+                            disabled={!window._.isEmpty(form.errors)}
                     >
                         Save changes
                     </Button>

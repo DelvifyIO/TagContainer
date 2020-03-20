@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 
-const useForm = ({ onSubmit, validator = () => {}, async = false }) => {
+const useForm = ({ onSubmit, validator = () => {}, initialValues = {}, async = false }) => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
 
@@ -20,6 +20,17 @@ const useForm = ({ onSubmit, validator = () => {}, async = false }) => {
         ...values,
         [e.target.name]: e.target.dataset.single ? selecteds.join() : selecteds,
       }));
+    }
+    if (e.target.dataset.arrayname) {
+      const splits = e.target.name.split('_');
+      const name = e.target.dataset.arrayname;
+      const index = splits[1];
+      const tempArray = window._.clone(values[name]) || [];
+      tempArray[index] = e.target.value;
+      setValues(values => ({
+        ...values,
+        [name]: tempArray,
+      }));
     } else {
       setValues(values => ({
         ...values,
@@ -32,8 +43,18 @@ const useForm = ({ onSubmit, validator = () => {}, async = false }) => {
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    onSubmit(values, errors);
-  }, [values, errors, onSubmit]);
+    console.log(values);
+    const temp = window._.clone(values);
+    window._.forEach(temp, (value, key) => {
+      if (Array.isArray(value)) {
+        for(let i = 0; i < Math.max(initialValues[key].length, value.length); i++) {
+          temp[key][i] = value[i] ? value[i] : initialValues[key][i];
+        }
+        temp[key] = window._.filter(temp[key], (datum) => !window._.isEmpty(datum));
+      }
+    });
+    onSubmit({ ...initialValues, ...temp }, errors);
+  }, [values, errors, onSubmit, initialValues]);
 
   return {
     form: {

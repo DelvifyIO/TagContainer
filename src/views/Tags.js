@@ -52,7 +52,7 @@ const Tags = (props) => {
 
     const clientId = window._.get(props, ['match', 'params', 'clientId']);
     const [client, setClient] = useState({});
-    const [status, setStatus] = useState(TAG_STATUS.LOADING);
+    const [status, setStatus] = useState([]);
     const [editButton, setEditButton] = useState(false);
     const [isEditClientModalOpen, setIsEditClientModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
@@ -82,22 +82,28 @@ const Tags = (props) => {
             .then((result) => {
                 const client = clientMapper(result);
                 setClient(client);
-                if (client.website) {
-                    window.api.get(proxyUrl + client.website, {
-                        params: { delvifyTagChecking: true },
-                        verbose: true,
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
+                if (client.websites && client.websites.length > 0) {
+                    const promises = [];
+                    const status = window._.times(client.websites.length, () => TAG_STATUS.LOADING);
+                    setStatus(status);
+
+                    client.websites.forEach((website) => {
+                        promises.push(window.api.get(proxyUrl + website, {
+                            verbose: true,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        })
+                            .then((result) => {
+                                const installed = result.response.includes(`delvifyTagContainer${client.id}`);
+                                return Promise.resolve(installed ? TAG_STATUS.INSTALLED : TAG_STATUS.UNINSTALLED);
+                            })
+                            .catch((e) => {
+                                setStatus(TAG_STATUS.UNINSTALLED);
+                            }));
+                    });
+                    Promise.all(promises)
                         .then((result) => {
-                            const installed = result.response.includes(`delvifyTagContainer${client.id}`);
-                            setStatus(installed ? TAG_STATUS.INSTALLED : TAG_STATUS.UNINSTALLED);
+                            setStatus(result);
                         })
-                        .catch((e) => {
-                            console.log(e);
-                            setStatus(TAG_STATUS.UNINSTALLED);
-                        })
-                } else {
-                    setStatus(TAG_STATUS.NO_WEBSITE);
                 }
             })
             .catch((e) => {
@@ -181,7 +187,7 @@ const Tags = (props) => {
                 console.log(err);
                 toggleTagModal();
             });
-    }, [activeTag]);
+    }, [toggleTagModal, activeTag]);
 
     const onCopyScriptClick = useCallback(() => {
         scriptTagRef.current.select();
@@ -189,7 +195,7 @@ const Tags = (props) => {
         setCopyStatus(STATUS.SUCCESS);
     }, [scriptTagRef]);
 
-    const { form: formEditClient } = useForm({ onSubmit: onSubmitEditClient, validator: validatorEditClient });
+    const { form: formEditClient } = useForm({ onSubmit: onSubmitEditClient, validator: validatorEditClient, initialValues: client });
     const { form: formTag } = useForm({ onSubmit: onSubmitTag, validator: validatorTag });
 
     return (
@@ -207,7 +213,29 @@ const Tags = (props) => {
 
                         }
                         <Row><Col md={2}>Client Name:</Col><Col className="font-weight-bold">{client.name}</Col></Row>
-                        <Row><Col md={2}>Client Website:</Col><Col className="font-weight-bold"><a href={client.website} target="blank">{client.website}</a></Col></Row>
+                        <Row>
+                            <Col md={2}>Client Website:</Col>
+                            <Col>
+                                {
+                                    client.websites && client.websites.length > 0 ? client.websites.map((website, index) =>
+                                        <Row key={`website_${index}`} className="pr-5">
+                                            <Col>
+                                                <div className="font-weight-bold" key={`website_`}><a href={website} target="blank">{website}</a></div>
+                                            </Col>
+                                            <Col sm={1}>
+                                                <div>
+                                                    {
+                                                        status[index] && status[index] === TAG_STATUS.INSTALLED ?
+                                                            <i className="fas fa-check text-success" title="Installed"/> :
+                                                            <i className="fas fa-times text-danger" title="Uninstalled"/>
+                                                    }
+                                                </div>
+                                            </Col>
+                                        </Row>) :
+                                        <span>NO WEBSITE</span>
+                                }
+                            </Col>
+                        </Row>
                         <Row><Col md={2}>Created Date:</Col><Col className="font-weight-bold">{moment(client.createdAt).format("DD MMM YYYY")}</Col></Row>
                         <Row>
                             <Col md={2}>JS Tag:</Col>
@@ -221,7 +249,7 @@ const Tags = (props) => {
                                         style={{ resize: 'none' }}
                                         ref={scriptTagRef}
                                         value={`<!-- Delvify Tag Container -->
-<script src="${getUrlWithSlash(process.env.REACT_APP_API_HOST)}script/${client.id}" id="delvifyTagContainer${client.id}"/>
+<script src="${getUrlWithSlash(process.env.REACT_APP_API_HOST)}script/${client.id}" id="delvifyTagContainer${client.id}"></script>
 <!-- End Delvify Tag Container -->`}
                                     />
                                 </Form>
@@ -230,17 +258,6 @@ const Tags = (props) => {
                                         copyStatus === STATUS.SUCCESS ? <i className="fas fa-clipboard-check"/> : <i className="far fa-clipboard"/>
                                     }
                                 </Button>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={2}>Status:</Col>
-                            <Col className="font-weight-bold">
-                                <div className="mt-1">
-                                    { status === TAG_STATUS.INSTALLED ?
-                                        <i className="fas fa-check text-success" title="Installed"/> : status === TAG_STATUS.LOADING ?
-                                            <i className="fa fa-spinner fa-spin"/> : status === TAG_STATUS.NO_WEBSITE ?
-                                                <span>NO WEBSITE</span> : <i className="fas fa-times text-danger" title="Uninstalled"/> }
-                                </div>
                             </Col>
                         </Row>
                     </Jumbotron>
@@ -274,7 +291,7 @@ const Tags = (props) => {
                 isOpen={isEditClientModalOpen}
                 toggleModal={toggleEditClientModal}
                 form={formEditClient}
-                initialValues={{ name: client.name, website: client.website }}
+                initialValues={client}
                 onRemove={removeClientHandler}
             />
             <TagModal

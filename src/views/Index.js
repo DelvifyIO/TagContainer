@@ -63,24 +63,36 @@ const Index = (props) => {
     data.forEach((client) => {
         promises.push(
           new Promise((resolve, reject) => {
-            if (client.website) {
-              return window.api.get(proxyUrl + client.website, {
-                params: { delvifyTagChecking: true },
-                verbose: true,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-              })
-                  .then((result) => {
-                    const installed = result.response.includes(`delvifyTagContainer${client.id}`);
-                    client.status = installed ? TAG_STATUS.INSTALLED : TAG_STATUS.UNINSTALLED;
-                    return resolve(client);
+            if (client.websites && client.websites.length > 0) {
+              const clientPromises = [];
+              client.websites.forEach((website) => {
+                clientPromises.push(
+                  new Promise((res, rej) => {
+                    return window.api.get(proxyUrl + website, {
+                      params: { delvifyTagChecking: true },
+                      verbose: true,
+                      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then((result) => {
+                          const installed = result.response.includes(`delvifyTagContainer${client.id}`);
+                          const status = installed ? TAG_STATUS.INSTALLED : TAG_STATUS.UNINSTALLED;
+                          return res(status);
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                          const status = TAG_STATUS.UNINSTALLED;
+                          return res(status);
+                        })
                   })
-                  .catch((e) => {
-                    console.log(e);
-                    client.status = TAG_STATUS.UNINSTALLED;
-                    return resolve(client);
-                  })
+                );
+                return Promise.all(clientPromises)
+                    .then((statuses) => {
+                      client.status = statuses;
+                      return resolve(client);
+                    })
+              });
             } else {
-              client.status = TAG_STATUS.NO_WEBSITE;
+              client.status = [];
               return resolve(client);
             }
           })
@@ -116,7 +128,6 @@ const Index = (props) => {
   }, []);
 
   const { form: formNewClient } = useForm({ onSubmit: onSubmitNewClient });
-
   return (
     <>
       <div className="wrapper light">
@@ -198,15 +209,21 @@ const Index = (props) => {
                           <td>{client.name}</td>
                           <td>{moment(client.createdAt).format("DD MMM YYYY")}</td>
                           <td>{client.tags.length}</td>
-                          <td>{ client.status === TAG_STATUS.INSTALLED ?
-                              <i className="fas fa-check text-success" title="Installed"/> : client.status === TAG_STATUS.LOADING ?
-                                  <i className="fa fa-spinner fa-spin"/> : client.status === TAG_STATUS.NO_WEBSITE ?
-                                      <span>NO WEBSITE</span> : <i className="fas fa-times text-danger" title="Uninstalled"/> }
+                          <td className="d-flex flex-row">{ !client.status ? <i className="fa fa-spinner fa-spin"/> :
+                              client.status.length <= 0 ? <span>NO WEBSITE</span> :
+                                  client.status.map((status, index) => {
+                                    return (<div key={`status_${client.id}_${index}`} className="mr-1">
+                                      {
+                                        status === TAG_STATUS.INSTALLED ?
+                                            <i className="fas fa-check text-success" title="Installed"/> : status === TAG_STATUS.LOADING ?
+                                            <i className="fa fa-spinner fa-spin"/> : <i className="fas fa-times text-danger" title="Uninstalled"/>
+                                      }
+                                    </div>);
+                              })}
                           </td>
                         </tr>
                     );
-              }
-              )
+              })
             }
             </tbody>
           </Table>

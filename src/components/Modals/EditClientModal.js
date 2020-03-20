@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 // reactstrap components
 import {Button, Col, Form, FormFeedback, FormGroup, FormText, Input, Modal} from "reactstrap";
 import PropTypes from "prop-types";
@@ -10,6 +10,7 @@ import ConfirmModal from "./ConfirmModal";
 const EditClientModal = (props) => {
     const { toggleModal, isOpen, initialValues, form, onRemove } = props;
     const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
+    const [websites, setWebsites] = useState(initialValues.websites || [null]);
 
     const toggleConfirmRemoveModal = useCallback(() => {
         setIsConfirmRemoveOpen(!isConfirmRemoveOpen);
@@ -19,6 +20,18 @@ const EditClientModal = (props) => {
         toggleConfirmRemoveModal();
         toggleModal();
     }, []);
+
+    const addWebsites = useCallback(() => {
+        const temp = window._.clone(websites);
+        temp.push(null);
+        setWebsites(temp);
+    }, [websites]);
+
+    useEffect(() => {
+        if (initialValues.websites && initialValues.websites.length > 0) {
+            setWebsites(initialValues.websites);
+        }
+    }, [initialValues]);
 
     return (
         <>
@@ -62,15 +75,24 @@ const EditClientModal = (props) => {
                             <Label htmlFor="clientWebsite" sm="4">
                                 Client Website:
                             </Label>
-                            <Col>
-                                <Input
-                                    className="w-100"
-                                    id="clientWebsite"
-                                    defaultValue={initialValues.website}
-                                    name="website"
-                                    type="text"
-                                    onChange={form.handleChange}
-                                />
+                            <Col className="w-100">
+                                {
+                                    websites.map((website, index) => {
+                                        return <Input
+                                            className="w-100 mb-1"
+                                            id={`clientWebsite_${index}`}
+                                            defaultValue={website}
+                                            name={`website_${index}`}
+                                            type="text"
+                                            onChange={form.handleChange}
+                                            key={`website_input_${index}`}
+                                            data-arrayname={'websites'}
+                                        />
+                                    })
+                                }
+                            </Col>
+                            <Col sm={1}>
+                                <Button className="btn-round btn-icon m-0" onClick={addWebsites}><i className="fas fa-plus"/></Button>
                             </Col>
                         </FormGroup>
                 </div>
