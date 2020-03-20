@@ -26,7 +26,7 @@ const useForm = ({ onSubmit, validator = () => {}, initialValues = {}, async = f
       const name = e.target.dataset.arrayname;
       const index = splits[1];
       const tempArray = window._.clone(values[name]) || [];
-      tempArray[index] = e.target.value;
+      tempArray[index] = e.target.value === "" ? null : e.target.value;
       setValues(values => ({
         ...values,
         [name]: tempArray,
@@ -43,12 +43,11 @@ const useForm = ({ onSubmit, validator = () => {}, initialValues = {}, async = f
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    console.log(values);
     const temp = window._.clone(values);
     window._.forEach(temp, (value, key) => {
       if (Array.isArray(value)) {
         for(let i = 0; i < Math.max(initialValues[key].length, value.length); i++) {
-          temp[key][i] = value[i] ? value[i] : initialValues[key][i];
+          temp[key][i] = value[i] === undefined ? initialValues[key][i] : value[i] ;
         }
         temp[key] = window._.filter(temp[key], (datum) => !window._.isEmpty(datum));
       }
