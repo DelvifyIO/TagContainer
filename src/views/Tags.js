@@ -31,10 +31,12 @@ const TagRow = (props) => {
                 </Col>
             </Row>
             <Row>
-                <Col md={2}>
-                    <span className="h7 text-uppercase">Path</span><br/>
-                    <span style={{ overflowWrap: 'break-word'}}>{ `/${tag.path}` }</span>
+                <Col>
+                    <span className="h7 text-uppercase">Url</span><br/>
+                    <span style={{ overflowWrap: 'break-word'}}>{ tag.path }</span>
                 </Col>
+            </Row>
+            <Row>
                 <Col md={2}>
                     <span className="h7 text-uppercase">Delay</span><br/>
                     <span>{ `${tag.delay}s` }</span>

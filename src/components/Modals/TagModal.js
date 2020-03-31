@@ -13,9 +13,8 @@ import Row from "reactstrap/es/Row";
 // core components
 
 const TagModal = (props) => {
-    const { toggleModal, isOpen, website, tag, form, onRemove } = props;
+    const { toggleModal, isOpen, tag, form, onRemove } = props;
     const initialValues = tag || {};
-    const websiteWithSlash = getUrlWithSlash(website);
     const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
 
     const toggleConfirmRemoveModal = useCallback(() => {
@@ -62,24 +61,19 @@ const TagModal = (props) => {
                         </FormGroup>
                         <FormGroup className="row">
                             <Label htmlFor="path" sm="4">
-                                Path:
+                                Url:
                             </Label>
                             <Col>
                                 <FormGroup>
-                                    <div className="d-flex flex-row align-items-center">
-                                        <code className="text-muted flex-shrink-0">{websiteWithSlash}</code>
-                                        <div className="ml-1 mr-1">
-                                            <Input
-                                                id="path"
-                                                defaultValue={initialValues.path}
-                                                name="path"
-                                                type="text"
-                                                onChange={form.handleChange}
-                                                invalid={!!form.errors.path}
-                                            />
-                                            <FormFeedback>{form.errors.path}</FormFeedback>
-                                        </div>
-                                    </div>
+                                    <Input
+                                        id="path"
+                                        defaultValue={initialValues.path}
+                                        name="path"
+                                        type="text"
+                                        onChange={form.handleChange}
+                                        invalid={!!form.errors.path}
+                                    />
+                                    <FormFeedback>{form.errors.path}</FormFeedback>
                                 </FormGroup>
                             </Col>
                         </FormGroup>
